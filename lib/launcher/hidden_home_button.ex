@@ -21,7 +21,7 @@ defmodule Launcher.HiddenHomeButton do
   @impl Scenic.Scene
   def init(_, scenic_opts) do
     viewport = scenic_opts[:viewport]
-    {:ok, %{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
+    {:ok, %{size: {screen_width, _screen_height}}} = ViewPort.info(viewport)
 
     graph =
       Graph.build()
@@ -38,12 +38,5 @@ defmodule Launcher.HiddenHomeButton do
 
   def handle_input(_input, _context, state) do
     {:noreply, state}
-  end
-
-  defp sleep_screen do
-    backlight = Application.get_env(:launcher, :backlight_module)
-    if backlight do
-      backlight.brightness(0)
-    end
   end
 end
