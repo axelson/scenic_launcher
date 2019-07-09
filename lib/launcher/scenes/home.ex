@@ -91,7 +91,7 @@ defmodule Launcher.Scene.Home do
 
   defp sleep_screen(state) do
     Logger.info("Sleeping screen")
-    backlight = Application.get_env(:launcher, :backlight_module)
+    backlight = backlight()
 
     if backlight do
       backlight.brightness(0)
@@ -102,7 +102,7 @@ defmodule Launcher.Scene.Home do
 
   defp unsleep_screen(state) do
     Logger.info("Unsleeping screen")
-    backlight = Application.get_env(:launcher, :backlight_module)
+    backlight = backlight()
 
     if backlight do
       backlight.brightness(255)
@@ -111,8 +111,10 @@ defmodule Launcher.Scene.Home do
     %{state | sleep: false}
   end
 
+  defp backlight(), do: Launcher.LauncherConfig.backlight_module()
+
   defp reboot do
-    case Application.get_env(:launcher, :reboot_mfa) do
+    case Launcher.LauncherConfig.reboot_mfa() do
       nil -> Logger.info("No reboot mfa set")
       {mod, fun, args} -> apply(mod, fun, args)
     end
