@@ -17,13 +17,12 @@ defmodule Launcher.Scene.Home do
   @impl Scenic.Scene
   def init(_, scenic_opts) do
     state = %State{viewport: scenic_opts[:viewport]}
-
-    screen_height = Play.Utils.screen_height()
+    {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(state.viewport)
 
     graph =
       Graph.build()
       # Rectangle used for capturing input for the scene
-      |> Scenic.Primitives.rect({Play.Utils.screen_width(), Play.Utils.screen_height()})
+      |> Scenic.Primitives.rect({screen_width, screen_height})
       |> Scenic.Components.button("Asteroids", id: :btn_start_asteroids, t: {10, 10})
       |> Scenic.Components.button("Pomodoro", id: :btn_start_pomodoro, t: {10, 60})
       |> Scenic.Components.button("Sleep Screen",
@@ -46,11 +45,12 @@ defmodule Launcher.Scene.Home do
     {:noreply, state}
   end
 
-  def handle_input(input, _context, state) do
+  def handle_input(_input, _context, state) do
     # Logger.info("ignoring input: #{inspect input}. State: #{inspect state}")
     {:noreply, state}
   end
 
+  @impl Scenic.Scene
   def handle_info(_, state) do
     {:noreply, state}
   end
@@ -90,20 +90,24 @@ defmodule Launcher.Scene.Home do
   end
 
   defp sleep_screen(state) do
-    Logger.info "Sleeping screen"
+    Logger.info("Sleeping screen")
     backlight = Application.get_env(:launcher, :backlight_module)
+
     if backlight do
       backlight.brightness(0)
     end
+
     %{state | sleep: true}
   end
 
   defp unsleep_screen(state) do
-    Logger.info "Unsleeping screen"
+    Logger.info("Unsleeping screen")
     backlight = Application.get_env(:launcher, :backlight_module)
+
     if backlight do
       backlight.brightness(255)
     end
+
     %{state | sleep: false}
   end
 
