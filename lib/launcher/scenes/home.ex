@@ -9,6 +9,8 @@ defmodule Launcher.Scene.Home do
   alias Scenic.Graph
   alias Scenic.ViewPort
 
+  @button_font_size 25
+
   defmodule State do
     @moduledoc false
     defstruct [:viewport, sleep: false]
@@ -23,13 +25,26 @@ defmodule Launcher.Scene.Home do
       Graph.build()
       # Rectangle used for capturing input for the scene
       |> Scenic.Primitives.rect({screen_width, screen_height})
-      |> Scenic.Components.button("Asteroids", id: :btn_start_asteroids, t: {10, 10})
-      |> Scenic.Components.button("Pomodoro", id: :btn_start_pomodoro, t: {10, 60})
+      |> Scenic.Components.button("AsteroidsZ",
+        id: :btn_start_asteroids,
+        t: {10, 10},
+        button_font_size: @button_font_size
+      )
+      |> Scenic.Components.button("Pomodoro",
+        id: :btn_start_pomodoro,
+        t: {10, 70},
+        button_font_size: @button_font_size
+      )
       |> Scenic.Components.button("Sleep Screen",
         id: :btn_sleep_screen,
-        t: {10, screen_height - 50}
+        t: {10, screen_height - 55},
+        button_font_size: @button_font_size
       )
-      |> Scenic.Components.button("Reboot", id: :btn_reboot, t: {150, screen_height - 50})
+      |> Scenic.Components.button("Reboot",
+        id: :btn_reboot,
+        t: {185, screen_height - 55},
+        button_font_size: @button_font_size
+      )
 
     {:ok, state, push: graph}
   end
