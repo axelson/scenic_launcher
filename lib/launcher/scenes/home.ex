@@ -25,7 +25,7 @@ defmodule Launcher.Scene.Home do
       Graph.build()
       # Rectangle used for capturing input for the scene
       |> Scenic.Primitives.rect({screen_width, screen_height})
-      |> Scenic.Components.button("AsteroidsZ",
+      |> Scenic.Components.button("Asteroids",
         id: :btn_start_asteroids,
         t: {10, 10},
         button_font_size: @button_font_size
