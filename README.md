@@ -1,10 +1,10 @@
 # Launcher
 
 TODO:
-- [ ] Extract to a separate top-level git repository
+- [x] Extract to a separate top-level git repository
+- [x] Add a reboot button
 - [ ] Add a refresh cycle? (Maybe only when running on desktop)
 - [ ] Create a scenic log viewer app to view RingLogger logs or similar
-- [ ] Add a reboot button
 
 ## Installation
 
