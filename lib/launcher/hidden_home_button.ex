@@ -12,14 +12,15 @@ defmodule Launcher.HiddenHomeButton do
   @height 30
 
   defmodule State do
-    defstruct [:viewport]
+    defstruct [:viewport, :on_switch]
   end
 
   @impl Scenic.Component
   def verify(data), do: {:ok, data}
 
   @impl Scenic.Scene
-  def init(_, scenic_opts) do
+  def init(opts, scenic_opts) do
+    on_switch = Keyword.get(opts, :on_switch)
     viewport = scenic_opts[:viewport]
     {:ok, %{size: {screen_width, _screen_height}}} = ViewPort.info(viewport)
 
@@ -27,11 +28,14 @@ defmodule Launcher.HiddenHomeButton do
       Graph.build()
       |> Scenic.Primitives.rect({@width, @height}, fill: :clear, t: {screen_width - @width, 0})
 
-    {:ok, %State{viewport: viewport}, push: graph}
+    state = %State{viewport: viewport, on_switch: on_switch}
+
+    {:ok, state, push: graph}
   end
 
   @impl Scenic.Scene
   def handle_input({:cursor_button, {_, :press, _, _}}, _context, state) do
+    if state.on_switch, do: state.on_switch.()
     Launcher.switch_to_launcher(state.viewport)
     {:noreply, state}
   end
