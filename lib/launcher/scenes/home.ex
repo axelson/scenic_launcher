@@ -14,13 +14,13 @@ defmodule Launcher.Scene.Home do
 
   defmodule State do
     @moduledoc false
-    defstruct [:viewport, sleep: false]
+    defstruct [:viewport, :graph, sleep: false]
   end
 
   @impl Scenic.Scene
   def init(_, scenic_opts) do
-    state = %State{viewport: scenic_opts[:viewport]}
-    {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(state.viewport)
+    viewport = scenic_opts[:viewport]
+    {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
 
     graph =
       Graph.build()
@@ -48,6 +48,8 @@ defmodule Launcher.Scene.Home do
       )
 
     schedule_refresh()
+
+    state = %State{viewport: viewport, graph: graph}
 
     {:ok, state, push: graph}
   end

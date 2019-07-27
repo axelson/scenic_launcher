@@ -3,7 +3,7 @@
 TODO:
 - [x] Extract to a separate top-level git repository
 - [x] Add a reboot button
-- [ ] Add a refresh cycle? (Maybe only when running on desktop)
+- [x] Add a refresh cycle
 - [ ] Create a scenic log viewer app to view RingLogger logs or similar
 
 ## Installation
