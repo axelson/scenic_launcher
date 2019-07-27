@@ -10,6 +10,7 @@ defmodule Launcher.Scene.Home do
   alias Scenic.ViewPort
 
   @button_font_size 25
+  @refresh_rate round(1_000 / 30)
 
   defmodule State do
     @moduledoc false
@@ -46,6 +47,8 @@ defmodule Launcher.Scene.Home do
         button_font_size: @button_font_size
       )
 
+    schedule_refresh()
+
     {:ok, state, push: graph}
   end
 
@@ -66,6 +69,11 @@ defmodule Launcher.Scene.Home do
   end
 
   @impl Scenic.Scene
+  def handle_info(:refresh, state) do
+    schedule_refresh()
+    {:noreply, state, push: state.graph}
+  end
+
   def handle_info(_, state) do
     {:noreply, state}
   end
@@ -124,6 +132,12 @@ defmodule Launcher.Scene.Home do
     end
 
     %{state | sleep: false}
+  end
+
+  defp schedule_refresh do
+    if Launcher.LauncherConfig.refresh_enabled?() do
+      Process.send_after(self(), :refresh, @refresh_rate)
+    end
   end
 
   defp backlight(), do: Launcher.LauncherConfig.backlight_module()
