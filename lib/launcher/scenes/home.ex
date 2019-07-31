@@ -46,6 +46,11 @@ defmodule Launcher.Scene.Home do
         t: {185, screen_height - 55},
         button_font_size: @button_font_size
       )
+      |> Scenic.Components.button("Exit",
+        id: :btn_exit,
+        t: {304, screen_height - 55},
+        button_font_size: @button_font_size
+      )
 
     schedule_refresh()
 
@@ -101,6 +106,11 @@ defmodule Launcher.Scene.Home do
     {:halt, state}
   end
 
+  def filter_event({:click, :btn_exit}, _from, state) do
+    exit()
+    {:halt, state}
+  end
+
   def filter_event(event, _from, state) do
     # IO.inspect(event, label: "event")
     {:cont, event, state}
@@ -149,5 +159,9 @@ defmodule Launcher.Scene.Home do
       nil -> Logger.info("No reboot mfa set")
       {mod, fun, args} -> apply(mod, fun, args)
     end
+  end
+
+  defp exit do
+    :application.stop(:play)
   end
 end
