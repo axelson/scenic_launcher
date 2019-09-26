@@ -17,25 +17,21 @@ defmodule Launcher.Scene.Home do
     defstruct [:viewport, :graph, sleep: false]
   end
 
+  def config do
+    Application.get_env(:launcher, :scenes, [])
+  end
+
   @impl Scenic.Scene
   def init(_, scenic_opts) do
     viewport = scenic_opts[:viewport]
     {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
 
+    Logger.debug("init!")
+
     graph =
       Graph.build()
       # Rectangle used for capturing input for the scene
       |> Scenic.Primitives.rect({screen_width, screen_height})
-      |> Scenic.Components.button("Asteroids",
-        id: :btn_start_asteroids,
-        t: {10, 10},
-        button_font_size: @button_font_size
-      )
-      |> Scenic.Components.button("Pomodoro",
-        id: :btn_start_pomodoro,
-        t: {10, 70},
-        button_font_size: @button_font_size
-      )
       |> Scenic.Components.button("Sleep Screen",
         id: :btn_sleep_screen,
         t: {10, screen_height - 55},
@@ -51,6 +47,7 @@ defmodule Launcher.Scene.Home do
         t: {304, screen_height - 55},
         button_font_size: @button_font_size
       )
+      |> add_buttons_to_graph()
 
     schedule_refresh()
 
@@ -58,6 +55,23 @@ defmodule Launcher.Scene.Home do
 
     {:ok, state, push: graph}
   end
+
+  defp add_buttons_to_graph(graph) do
+    config()
+    |> Enum.with_index()
+    |> Enum.reduce(graph, fn {app_config, index}, graph ->
+      {slug, name, _} = app_config
+
+      graph
+      |> Scenic.Components.button(name,
+        id: button_id(slug),
+        t: {10, 10 + 60 * index},
+        button_font_size: @button_font_size
+      )
+    end)
+  end
+
+  defp button_id(slug), do: "btn_scene_#{slug}"
 
   @impl Scenic.Scene
   def handle_input({:key, {_, :press, _}}, _context, %State{sleep: true} = state) do
@@ -86,14 +100,17 @@ defmodule Launcher.Scene.Home do
   end
 
   @impl Scenic.Scene
-  def filter_event({:click, :btn_start_asteroids}, _from, state) do
-    launch_asteroids(state.viewport)
-    {:halt, state}
-  end
+  def filter_event({:click, "btn_scene_" <> slug}, _from, state) do
+    %State{viewport: viewport} = state
 
-  def filter_event({:click, :btn_start_pomodoro}, _from, state) do
-    launch_pomodoro(state.viewport)
-    {:halt, state}
+    case scene_args(slug) do
+      nil ->
+        raise "Unable to find scene #{slug}"
+
+      scene_args ->
+        ViewPort.set_root(viewport, scene_args)
+        {:halt, state}
+    end
   end
 
   def filter_event({:click, :btn_reboot}, _from, state) do
@@ -116,12 +133,11 @@ defmodule Launcher.Scene.Home do
     {:cont, event, state}
   end
 
-  defp launch_asteroids(viewport) do
-    ViewPort.set_root(viewport, {Play.Scene.Splash, Play.Scene.Asteroids})
-  end
-
-  defp launch_pomodoro(viewport) do
-    ViewPort.set_root(viewport, {Timer.Scene.Home, nil})
+  defp scene_args(slug_to_find) do
+    config()
+    |> Enum.find_value(fn {slug, _name, scene_args} ->
+      if slug == slug_to_find, do: scene_args
+    end)
   end
 
   defp sleep_screen(state) do
