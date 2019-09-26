@@ -2,6 +2,18 @@ defmodule Launcher.HiddenHomeButton do
   @moduledoc """
   A transparent button that will switch back to the main launcher screen. Should
   be rendered last so that it is on the top and can be clicked/tapped.
+
+  Example of adding the HiddenHomeButton to a graph
+
+      graph
+      |> Launcher.HiddenHomeButton.add_to_graph(on_switch: &on_switch_handler/0)
+
+  Note that passing an `on_switch` callback function is optional but lets the
+  scene respond to being switched away from (although perhaps there's better
+  mechanisms to handle that)
+
+  NOTE: HiddenHomeButton should be added to the scene last so that it is drawn
+  on top of everything else and can receive the clicks in it's designated area.
   """
   use Scenic.Component, has_children: true
 
