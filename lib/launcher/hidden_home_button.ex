@@ -20,8 +20,8 @@ defmodule Launcher.HiddenHomeButton do
   alias Scenic.Graph
   alias Scenic.ViewPort
 
-  @width 30
-  @height 30
+  @width 40
+  @height 40
 
   defmodule State do
     defstruct [:viewport, :on_switch]
