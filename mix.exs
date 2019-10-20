@@ -21,7 +21,8 @@ defmodule Launcher.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:scenic, "~> 0.10"}
+      {:scenic, "~> 0.10"},
+      {:scenic_layout_o_matic, "0.2.0"}
     ]
   end
 end

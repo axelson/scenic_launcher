@@ -8,9 +8,22 @@ defmodule Launcher.Scene.Home do
   require Logger
   alias Scenic.Graph
   alias Scenic.ViewPort
+  alias LayoutOMatic.Layouts.Grid
+  alias LayoutOMatic.Layouts.Components.AutoLayout, as: Component
 
   @button_font_size 25
   @refresh_rate round(1_000 / 30)
+
+  @viewport Application.get_env(:play, :viewport)
+            |> Map.get(:size)
+
+  @grid %{
+    grid_template: [{:equal, 2}],
+    max_xy: @viewport,
+    grid_ids: [:left, :right],
+    starting_xy: {0, 0},
+    opts: [draw: true]
+  }
 
   defmodule State do
     @moduledoc false
@@ -30,6 +43,9 @@ defmodule Launcher.Scene.Home do
 
     graph =
       Graph.build()
+      |> Scenic.Primitives.add_specs_to_graph(Grid.grid(@grid),
+        id: :root_grid
+      )
       # Rectangle used for capturing input for the scene
       |> Scenic.Primitives.rect({screen_width, screen_height})
       |> Scenic.Components.button("Sleep Screen",
@@ -57,18 +73,32 @@ defmodule Launcher.Scene.Home do
   end
 
   defp add_buttons_to_graph(graph) do
-    config()
-    |> Enum.with_index()
-    |> Enum.reduce(graph, fn {app_config, index}, graph ->
-      {slug, name, _} = app_config
+    ids =
+      config()
+      |> Enum.map(fn app_config ->
+        {slug, _name, _} = app_config
 
-      graph
-      |> Scenic.Components.button(name,
-        id: button_id(slug),
-        t: {10, 10 + 60 * index},
-        button_font_size: @button_font_size
-      )
-    end)
+        button_id(slug)
+      end)
+
+    graph =
+      config()
+      |> Enum.with_index()
+      |> Enum.reduce(graph, fn {app_config, index}, graph ->
+        {slug, name, _} = app_config
+
+        graph
+        |> Scenic.Components.button(name,
+          id: button_id(slug),
+          # t: {90, 10 + 60 * index},
+          width: 100,
+          height: 80,
+          button_font_size: @button_font_size
+        )
+      end)
+
+    {:ok, new_graph} = Component.auto_layout(graph, :left_group, ids)
+    new_graph
   end
 
   defp button_id(slug), do: "btn_scene_#{slug}"
@@ -108,7 +138,10 @@ defmodule Launcher.Scene.Home do
         raise "Unable to find scene #{slug}"
 
       scene_args ->
-        ViewPort.set_root(viewport, scene_args)
+        # ViewPort.set_root(viewport, scene_args)
+        IO.inspect(scene_args, label: "scene_args")
+        IO.puts("set root to auto")
+        ViewPort.set_root(viewport, {MyApp.Scene.Auto, nil})
         {:halt, state}
     end
   end
