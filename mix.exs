@@ -21,7 +21,11 @@ defmodule Launcher.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:scenic, "~> 0.10"}
+      dep(:notes, :github),
+      {:scenic, "~> 0.10"},
     ]
   end
+
+  defp dep(:notes, :github), do: {:notes, github: "axelson/notes"}
+  defp dep(:notes, :path), do: {:notes, path: "~/dev/notes"}
 end

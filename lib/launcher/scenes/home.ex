@@ -23,10 +23,12 @@ defmodule Launcher.Scene.Home do
 
   @impl Scenic.Scene
   def init(_, scenic_opts) do
+    :ok = Phoenix.PubSub.subscribe(:notes_pubsub, "notes")
     viewport = scenic_opts[:viewport]
     {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
 
     Logger.debug("init!")
+    message = get_message()
 
     graph =
       Graph.build()
@@ -46,6 +48,12 @@ defmodule Launcher.Scene.Home do
         id: :btn_exit,
         t: {424, screen_height - 70},
         button_font_size: @button_font_size
+      )
+      |> Scenic.Primitives.text("message: #{message}",
+        id: :note_text,
+        t: {250, 10},
+        font_size: 34,
+        text_align: :left_top
       )
       |> add_buttons_to_graph()
 
@@ -92,6 +100,16 @@ defmodule Launcher.Scene.Home do
   @impl Scenic.Scene
   def handle_info(:refresh, state) do
     schedule_refresh()
+    {:noreply, state, push: state.graph}
+  end
+
+  def handle_info({:notes, :submit_note, note}, state) do
+    graph =
+      state.graph
+      |> Graph.modify(:note_text, &Scenic.Primitives.text(&1, "message: #{note}", []))
+
+    state = %State{state | graph: graph}
+
     {:noreply, state, push: state.graph}
   end
 
@@ -174,6 +192,12 @@ defmodule Launcher.Scene.Home do
     case Launcher.LauncherConfig.reboot_mfa() do
       nil -> Logger.info("No reboot mfa set")
       {mod, fun, args} -> apply(mod, fun, args)
+    end
+  end
+
+  defp get_message do
+    if Process.whereis(Notes) do
+      Notes.get_note()
     end
   end
 
