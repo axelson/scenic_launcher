@@ -55,6 +55,11 @@ defmodule Launcher.Scene.Home do
         font_size: 34,
         text_align: :left_top
       )
+      |> Scenic.Components.button("Clear Message",
+        id: :btn_clear_message,
+        t: {240, 100},
+        button_font_size: @button_font_size
+      )
       |> add_buttons_to_graph()
 
     schedule_refresh()
@@ -143,6 +148,11 @@ defmodule Launcher.Scene.Home do
 
   def filter_event({:click, :btn_exit}, _from, state) do
     exit()
+    {:halt, state}
+  end
+
+  def filter_event({:click, :btn_clear_message}, _from, state) do
+    Notes.clear_note()
     {:halt, state}
   end
 
