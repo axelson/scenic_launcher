@@ -23,7 +23,7 @@ defmodule Launcher.Scene.Home do
 
   @impl Scenic.Scene
   def init(_, scenic_opts) do
-    :ok = Phoenix.PubSub.subscribe(:notes_pubsub, "notes")
+    :ok = GoveeSemaphore.subscribe()
     viewport = scenic_opts[:viewport]
     {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
 
@@ -108,10 +108,16 @@ defmodule Launcher.Scene.Home do
     {:noreply, state, push: state.graph}
   end
 
-  def handle_info({:notes, :submit_note, note}, state) do
+  def handle_info({:govee_semaphore, :submit_note, note}, state) do
+    message =
+      case note do
+        :empty -> "empty note"
+        _ -> note
+      end
+
     graph =
       state.graph
-      |> Graph.modify(:note_text, &Scenic.Primitives.text(&1, "message: #{note}", []))
+      |> Graph.modify(:note_text, &Scenic.Primitives.text(&1, "message: #{message}", []))
 
     state = %State{state | graph: graph}
 
@@ -152,7 +158,7 @@ defmodule Launcher.Scene.Home do
   end
 
   def filter_event({:click, :btn_clear_message}, _from, state) do
-    Notes.clear_note()
+    GoveeSemaphore.clear_note()
     {:halt, state}
   end
 
@@ -206,8 +212,8 @@ defmodule Launcher.Scene.Home do
   end
 
   defp get_message do
-    if Process.whereis(Notes) do
-      Notes.get_note()
+    if Process.whereis(GoveeSemaphore) do
+      GoveeSemaphore.get_note()
     end
   end
 

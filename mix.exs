@@ -21,11 +21,11 @@ defmodule Launcher.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      dep(:notes, :github),
+      dep(:govee_semaphore, :github),
       {:scenic, "~> 0.10"},
     ]
   end
 
-  defp dep(:notes, :github), do: {:notes, github: "axelson/notes"}
-  defp dep(:notes, :path), do: {:notes, path: "~/dev/notes"}
+  defp dep(:govee_semaphore, :github), do: {:govee_semaphore, github: "axelson/govee_semaphore"}
+  defp dep(:govee_semaphore, :path), do: {:govee_semaphore, path: "~/dev/govee_semaphore"}
 end
