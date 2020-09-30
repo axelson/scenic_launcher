@@ -4,6 +4,9 @@ TODO:
 - [x] Extract to a separate top-level git repository
 - [x] Add a reboot button
 - [x] Add a refresh cycle
+- [ ] Don't directly depend on govee_semaphore
+  * Instead define a function that will return a scene to render into the
+    launcher home screen
 
 ## Installation
 
