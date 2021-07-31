@@ -22,10 +22,10 @@ defmodule Launcher.Scene.Home do
   end
 
   @impl Scenic.Scene
-  def init(_, scenic_opts) do
+  def init(scene, _args, scenic_opts) do
     :ok = GoveeSemaphore.subscribe()
     viewport = scenic_opts[:viewport]
-    {:ok, %ViewPort.Status{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
+    {:ok, %{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
 
     Logger.debug("init!")
     message = get_message()
@@ -66,7 +66,12 @@ defmodule Launcher.Scene.Home do
 
     state = %State{viewport: viewport, graph: graph}
 
-    {:ok, state, push: graph}
+    scene =
+      scene
+      |> assign(:state, state)
+      |> push_graph(graph)
+
+    {:ok, scene}
   end
 
   defp add_buttons_to_graph(graph) do
@@ -87,28 +92,53 @@ defmodule Launcher.Scene.Home do
   defp button_id(slug), do: "btn_scene_#{slug}"
 
   @impl Scenic.Scene
-  def handle_input({:key, {_, :press, _}}, _context, %State{sleep: true} = state) do
-    state = unsleep_screen(state)
-    {:noreply, state}
+  def handle_input({:key, {_, :press, _}}, _context, scene) do
+    state = scene.assigns.state
+
+    state =
+      case scene.assigns.state do
+        %State{sleep: true} -> unsleep_screen(state)
+        _ -> state
+      end
+
+    scene =
+      scene
+      |> assign(:state, state)
+
+    {:noreply, scene}
   end
 
-  def handle_input({:cursor_button, {_, :press, _, _}}, _context, %State{sleep: true} = state) do
-    state = unsleep_screen(state)
-    {:noreply, state}
+  def handle_input({:cursor_button, {_, :press, _, _}}, _context, scene) do
+    state = scene.assigns.state
+
+    state =
+      case scene.assigns.state do
+        %State{sleep: true} -> unsleep_screen(state)
+        _ -> state
+      end
+
+    scene =
+      scene
+      |> assign(:state, state)
+
+    {:noreply, scene}
   end
 
-  def handle_input(_input, _context, state) do
-    # Logger.info("ignoring input: #{inspect input}. State: #{inspect state}")
-    {:noreply, state}
+  def handle_input(_input, _context, scene) do
+    # Logger.info("ignoring input: #{inspect input}. Scene: #{inspect scene}")
+    {:noreply, scene}
   end
 
-  @impl Scenic.Scene
-  def handle_info(:refresh, state) do
+  @impl GenServer
+  def handle_info(:refresh, scene) do
     schedule_refresh()
-    {:noreply, state, push: state.graph}
+    scene = push_graph(scene, scene.assigns.state.graph)
+    {:noreply, scene}
   end
 
-  def handle_info({:govee_semaphore, :submit_note, note}, state) do
+  def handle_info({:govee_semaphore, :submit_note, note}, scene) do
+    state = scene.assigns.state
+
     message =
       case note do
         :empty -> "empty note"
@@ -121,15 +151,20 @@ defmodule Launcher.Scene.Home do
 
     state = %State{state | graph: graph}
 
-    {:noreply, state, push: state.graph}
+    scene =
+      scene
+      |> assign(:state, state)
+
+    {:noreply, scene}
   end
 
-  def handle_info(_, state) do
-    {:noreply, state}
+  def handle_info(_, scene) do
+    {:noreply, scene}
   end
 
   @impl Scenic.Scene
-  def filter_event({:click, "btn_scene_" <> slug}, _from, state) do
+  def handle_event({:click, "btn_scene_" <> slug}, _from, scene) do
+    state = scene.assigns.state
     %State{viewport: viewport} = state
 
     case scene_args(slug) do
@@ -142,29 +177,35 @@ defmodule Launcher.Scene.Home do
     end
   end
 
-  def filter_event({:click, :btn_reboot}, _from, state) do
+  def handle_event({:click, :btn_reboot}, _from, scene) do
     reboot()
-    {:halt, state}
+    {:halt, scene}
   end
 
-  def filter_event({:click, :btn_sleep_screen}, _from, state) do
+  def handle_event({:click, :btn_sleep_screen}, _from, scene) do
+    state = scene.assigns.state
     state = sleep_screen(state)
-    {:halt, state}
+
+    scene =
+      scene
+      |> assign(:state, state)
+
+    {:halt, scene}
   end
 
-  def filter_event({:click, :btn_exit}, _from, state) do
+  def handle_event({:click, :btn_exit}, _from, scene) do
     exit()
-    {:halt, state}
+    {:halt, scene}
   end
 
-  def filter_event({:click, :btn_clear_message}, _from, state) do
+  def handle_event({:click, :btn_clear_message}, _from, scene) do
     GoveeSemaphore.clear_note()
-    {:halt, state}
+    {:halt, scene}
   end
 
-  def filter_event(event, _from, state) do
+  def handle_event(event, _from, scene) do
     # IO.inspect(event, label: "event")
-    {:cont, event, state}
+    {:cont, event, scene}
   end
 
   defp scene_args(slug_to_find) do

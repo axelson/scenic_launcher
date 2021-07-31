@@ -18,41 +18,45 @@ defmodule Launcher.HiddenHomeButton do
   use Scenic.Component, has_children: true
 
   alias Scenic.Graph
-  alias Scenic.ViewPort
 
   @width 40
   @height 40
 
   defmodule State do
-    defstruct [:viewport, :on_switch]
+    defstruct [:on_switch]
   end
 
   @impl Scenic.Component
-  def verify(data), do: {:ok, data}
+  def validate(data), do: {:ok, data}
 
   @impl Scenic.Scene
-  def init(opts, scenic_opts) do
+  def init(scene, opts, _scenic_opts) do
     on_switch = Keyword.get(opts, :on_switch)
-    viewport = scenic_opts[:viewport]
-    {:ok, %{size: {screen_width, _screen_height}}} = ViewPort.info(viewport)
+    %Scenic.ViewPort{size: {screen_width, _screen_height}} = scene.viewport
 
     graph =
       Graph.build()
       |> Scenic.Primitives.rect({@width, @height}, fill: :clear, t: {screen_width - @width, 0})
 
-    state = %State{viewport: viewport, on_switch: on_switch}
+    state = %State{on_switch: on_switch}
 
-    {:ok, state, push: graph}
+    scene =
+      scene
+      |> assign(:state, state)
+      |> push_graph(graph)
+
+    {:ok, scene}
   end
 
   @impl Scenic.Scene
-  def handle_input({:cursor_button, {_, :press, _, _}}, _context, state) do
+  def handle_input({:cursor_button, {_, :press, _, _}}, _context, scene) do
+    state = scene.assigns.state
     if state.on_switch, do: state.on_switch.()
-    Launcher.switch_to_launcher(state.viewport)
-    {:noreply, state}
+    Launcher.switch_to_launcher(scene.viewport)
+    {:noreply, scene}
   end
 
-  def handle_input(_input, _context, state) do
-    {:noreply, state}
+  def handle_input(_input, _context, scene) do
+    {:noreply, scene}
   end
 end
