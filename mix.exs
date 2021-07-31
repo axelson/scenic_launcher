@@ -22,10 +22,17 @@ defmodule Launcher.MixProject do
   defp deps do
     [
       dep(:govee_semaphore, :github),
-      {:scenic, "~> 0.10"},
+      dep(:scenic, :github)
     ]
   end
 
   defp dep(:govee_semaphore, :github), do: {:govee_semaphore, github: "axelson/govee_semaphore"}
   defp dep(:govee_semaphore, :path), do: {:govee_semaphore, path: "~/dev/govee_semaphore"}
+
+  defp dep(:scenic, :hex), do: {:scenic, "~> 0.10"}
+
+  defp dep(:scenic, :github),
+    do: {:scenic, github: "boydm/scenic", ref: "7c6b7ef", override: true}
+
+  defp dep(:scenic, :path), do: {:scenic, path: "../forks/scenic", override: true}
 end
