@@ -32,7 +32,7 @@ defmodule Launcher.MixProject do
   defp dep(:scenic, :hex), do: {:scenic, "~> 0.10"}
 
   defp dep(:scenic, :github),
-    do: {:scenic, github: "boydm/scenic", ref: "7c6b7ef", override: true}
+    do: {:scenic, github: "boydm/scenic", ref: "d47a82c", override: true}
 
   defp dep(:scenic, :path), do: {:scenic, path: "../forks/scenic", override: true}
 end
