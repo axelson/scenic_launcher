@@ -9,7 +9,7 @@ defmodule Launcher.Scene.Home do
   alias Scenic.Graph
   alias Scenic.ViewPort
 
-  @button_font_size 35
+  @button_font_size 30
   @refresh_rate round(1_000 / 30)
 
   defmodule State do
