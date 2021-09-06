@@ -36,7 +36,7 @@ defmodule Launcher.HiddenHomeButton do
 
     graph =
       Graph.build()
-      |> Scenic.Primitives.rect({@width, @height}, fill: :clear, t: {screen_width - @width, 0})
+      |> Scenic.Primitives.rect({@width, @height}, input: [:cursor_button], fill: :clear, t: {screen_width - @width, 0})
 
     state = %State{on_switch: on_switch}
 

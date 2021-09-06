@@ -14,7 +14,7 @@ defmodule Launcher.Scene.Home do
 
   defmodule State do
     @moduledoc false
-    defstruct [:viewport, :graph, sleep: false]
+    defstruct [:graph, sleep: false]
   end
 
   def config do
@@ -22,10 +22,9 @@ defmodule Launcher.Scene.Home do
   end
 
   @impl Scenic.Scene
-  def init(scene, _args, scenic_opts) do
+  def init(scene, _args, _scenic_opts) do
     :ok = GoveeSemaphore.subscribe()
-    viewport = scenic_opts[:viewport]
-    {:ok, %{size: {screen_width, screen_height}}} = ViewPort.info(viewport)
+    %Scenic.ViewPort{size: {screen_width, screen_height}} = scene.viewport
 
     Logger.debug("init!")
     message = get_message()
@@ -53,7 +52,8 @@ defmodule Launcher.Scene.Home do
         id: :note_text,
         t: {250, 10},
         font_size: 34,
-        text_align: :left_top
+        text_align: :left,
+        text_base: :top
       )
       |> Scenic.Components.button("Clear Message",
         id: :btn_clear_message,
@@ -64,7 +64,7 @@ defmodule Launcher.Scene.Home do
 
     schedule_refresh()
 
-    state = %State{viewport: viewport, graph: graph}
+    state = %State{graph: graph}
 
     scene =
       scene
@@ -165,14 +165,13 @@ defmodule Launcher.Scene.Home do
   @impl Scenic.Scene
   def handle_event({:click, "btn_scene_" <> slug}, _from, scene) do
     state = scene.assigns.state
-    %State{viewport: viewport} = state
 
     case scene_args(slug) do
       nil ->
         raise "Unable to find scene #{slug}"
 
-      scene_args ->
-        ViewPort.set_root(viewport, scene_args)
+      {mod, args} ->
+        ViewPort.set_root(scene.viewport, mod, args)
         {:halt, state}
     end
   end

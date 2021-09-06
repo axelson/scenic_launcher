@@ -10,6 +10,6 @@ defmodule Launcher do
   """
   def switch_to_launcher(viewport) do
     IO.puts("Switching to launcher!")
-    ViewPort.set_root(viewport, {Launcher.Scene.Home, nil})
+    ViewPort.set_root(viewport, Launcher.Scene.Home, nil)
   end
 end
