@@ -32,7 +32,7 @@ defmodule Launcher.Scene.Home do
     graph =
       Graph.build()
       # Rectangle used for capturing input for the scene
-      |> Scenic.Primitives.rect({screen_width, screen_height})
+      |> Scenic.Primitives.rect({screen_width, screen_height}, input: [:cursor_button])
       |> Scenic.Components.button("Sleep Screen",
         id: :btn_sleep_screen,
         t: {10, screen_height - 70},
