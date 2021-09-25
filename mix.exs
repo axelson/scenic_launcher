@@ -21,13 +21,9 @@ defmodule Launcher.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      dep(:govee_semaphore, :github),
       dep(:scenic, :github)
     ]
   end
-
-  defp dep(:govee_semaphore, :github), do: {:govee_semaphore, github: "axelson/govee_semaphore"}
-  defp dep(:govee_semaphore, :path), do: {:govee_semaphore, path: "~/dev/govee_semaphore"}
 
   defp dep(:scenic, :hex), do: {:scenic, "~> 0.10"}
 

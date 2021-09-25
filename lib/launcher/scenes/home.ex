@@ -23,11 +23,9 @@ defmodule Launcher.Scene.Home do
 
   @impl Scenic.Scene
   def init(scene, _args, _scenic_opts) do
-    :ok = GoveeSemaphore.subscribe()
     %Scenic.ViewPort{size: {screen_width, screen_height}} = scene.viewport
 
     Logger.debug("init!")
-    message = get_message()
 
     graph =
       Graph.build()
@@ -46,18 +44,6 @@ defmodule Launcher.Scene.Home do
       |> Scenic.Components.button("Exit",
         id: :btn_exit,
         t: {424, screen_height - 70},
-        button_font_size: @button_font_size
-      )
-      |> Scenic.Primitives.text("message: #{message}",
-        id: :note_text,
-        t: {250, 10},
-        font_size: 34,
-        text_align: :left,
-        text_base: :top
-      )
-      |> Scenic.Components.button("Clear Message",
-        id: :btn_clear_message,
-        t: {240, 100},
         button_font_size: @button_font_size
       )
       |> add_buttons_to_graph()
@@ -136,28 +122,6 @@ defmodule Launcher.Scene.Home do
     {:noreply, scene}
   end
 
-  def handle_info({:govee_semaphore, :submit_note, note}, scene) do
-    state = scene.assigns.state
-
-    message =
-      case note do
-        :empty -> "empty note"
-        _ -> note
-      end
-
-    graph =
-      state.graph
-      |> Graph.modify(:note_text, &Scenic.Primitives.text(&1, "message: #{message}", []))
-
-    state = %State{state | graph: graph}
-
-    scene =
-      scene
-      |> assign(:state, state)
-
-    {:noreply, scene}
-  end
-
   def handle_info(_, scene) do
     {:noreply, scene}
   end
@@ -194,11 +158,6 @@ defmodule Launcher.Scene.Home do
 
   def handle_event({:click, :btn_exit}, _from, scene) do
     exit()
-    {:halt, scene}
-  end
-
-  def handle_event({:click, :btn_clear_message}, _from, scene) do
-    GoveeSemaphore.clear_note()
     {:halt, scene}
   end
 
@@ -248,12 +207,6 @@ defmodule Launcher.Scene.Home do
     case Launcher.LauncherConfig.reboot_mfa() do
       nil -> Logger.info("No reboot mfa set")
       {mod, fun, args} -> apply(mod, fun, args)
-    end
-  end
-
-  defp get_message do
-    if Process.whereis(GoveeSemaphore) do
-      GoveeSemaphore.get_note()
     end
   end
 

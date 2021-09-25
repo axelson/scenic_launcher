@@ -1,15 +1,7 @@
 %{
-  "blue_heron": {:git, "https://github.com/smartrent/blue_heron.git", "739b07c1f027c9fa00995b943b39ef95b90f87c4", [branch: "main", sparse: "blue_heron"]},
-  "blue_heron_transport_usb": {:git, "https://github.com/smartrent/blue_heron.git", "739b07c1f027c9fa00995b943b39ef95b90f87c4", [branch: "main", sparse: "blue_heron_transport_usb"]},
   "elixir_make": {:hex, :elixir_make, "0.6.2", "7dffacd77dec4c37b39af867cedaabb0b59f6a871f89722c25b28fcd4bd70530", [:mix], [], "hexpm", "03e49eadda22526a7e5279d53321d1cced6552f344ba4e03e619063de75348d9"},
-  "enum_type": {:git, "https://github.com/axelson/enum_type.git", "56de320d470a77b292cc9366eaf075ba0ac191ea", [branch: "conditionally-generate-ecto-types"]},
   "ex_image_info": {:hex, :ex_image_info, "0.2.4", "610002acba43520a9b1cf1421d55812bde5b8a8aeaf1fe7b1f8823e84e762adb", [:mix], [], "hexpm", "fd1a7e02664e3b14dfd3b231d22fdd48bd3dd694c4773e6272b3a6228f1106bc"},
   "font_metrics": {:hex, :font_metrics, "0.5.1", "10ce0b8b1bf092a2d3d307e05a7c433787ae8ca7cd1f3cf959995a628809a994", [:mix], [{:nimble_options, "~> 0.3", [hex: :nimble_options, repo: "hexpm", optional: false]}], "hexpm", "192e4288772839ae4dadccb0f5b1d5c89b73a0c3961ccea14b6181fdcd535e54"},
-  "govee": {:git, "https://github.com/axelson/govee.git", "25844d350d0c5c8d848254eb007edffb43f9af74", []},
-  "govee_semaphore": {:git, "https://github.com/axelson/govee_semaphore.git", "a0b64490ef48f74b8065b3c91d152ca8805e8562", []},
-  "msgpax": {:hex, :msgpax, "2.3.0", "14f52ad249a3f77b5e2d59f6143e6c18a6e74f34666989e22bac0a465f9835cc", [:mix], [{:plug, "~> 1.0", [hex: :plug, repo: "hexpm", optional: true]}], "hexpm", "65c36846a62ed5615baf7d7d47babb6541313a6c0b6d2ff19354bd518f52df7e"},
   "nimble_options": {:hex, :nimble_options, "0.3.0", "1872911bf50a048f04da26e02704e6aeafc362c2daa7636b6dbfda9492ccfcfa", [:mix], [], "hexpm", "180790a8644fea402452bc15bb54b9bf2c8e5c1fdeb6b39d8072e59c324edf7f"},
-  "phoenix_pubsub": {:hex, :phoenix_pubsub, "2.0.0", "a1ae76717bb168cdeb10ec9d92d1480fec99e3080f011402c0a2d68d47395ffb", [:mix], [], "hexpm", "c52d948c4f261577b9c6fa804be91884b381a7f8f18450c5045975435350f771"},
   "scenic": {:git, "https://github.com/boydm/scenic.git", "23c84e5a4650171ae4945b7ccc9440c05c9d128c", [branch: "v0.11"]},
-  "typed_struct": {:hex, :typed_struct, "0.2.1", "e1993414c371f09ff25231393b6430bd89d780e2a499ae3b2d2b00852f593d97", [:mix], [], "hexpm", "8f5218c35ec38262f627b2c522542f1eae41f625f92649c0af701a6fab2e11b3"},
 }
