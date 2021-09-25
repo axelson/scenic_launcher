@@ -94,7 +94,7 @@ defmodule Launcher.Scene.Home do
     {:noreply, scene}
   end
 
-  def handle_input({:cursor_button, {_, :press, _, _}}, _context, scene) do
+  def handle_input({:cursor_button, {:btn_left, 1, _, _}}, _context, scene) do
     state = scene.assigns.state
 
     state =

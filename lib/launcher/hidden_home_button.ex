@@ -49,7 +49,7 @@ defmodule Launcher.HiddenHomeButton do
   end
 
   @impl Scenic.Scene
-  def handle_input({:cursor_button, {_, :press, _, _}}, _context, scene) do
+  def handle_input({:cursor_button, {:btn_left, 1, _, _}}, _context, scene) do
     state = scene.assigns.state
     if state.on_switch, do: state.on_switch.()
     Launcher.switch_to_launcher(scene.viewport)

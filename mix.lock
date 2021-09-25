@@ -3,5 +3,5 @@
   "ex_image_info": {:hex, :ex_image_info, "0.2.4", "610002acba43520a9b1cf1421d55812bde5b8a8aeaf1fe7b1f8823e84e762adb", [:mix], [], "hexpm", "fd1a7e02664e3b14dfd3b231d22fdd48bd3dd694c4773e6272b3a6228f1106bc"},
   "font_metrics": {:hex, :font_metrics, "0.5.1", "10ce0b8b1bf092a2d3d307e05a7c433787ae8ca7cd1f3cf959995a628809a994", [:mix], [{:nimble_options, "~> 0.3", [hex: :nimble_options, repo: "hexpm", optional: false]}], "hexpm", "192e4288772839ae4dadccb0f5b1d5c89b73a0c3961ccea14b6181fdcd535e54"},
   "nimble_options": {:hex, :nimble_options, "0.3.0", "1872911bf50a048f04da26e02704e6aeafc362c2daa7636b6dbfda9492ccfcfa", [:mix], [], "hexpm", "180790a8644fea402452bc15bb54b9bf2c8e5c1fdeb6b39d8072e59c324edf7f"},
-  "scenic": {:git, "https://github.com/boydm/scenic.git", "23c84e5a4650171ae4945b7ccc9440c05c9d128c", [branch: "v0.11"]},
+  "scenic": {:git, "https://github.com/boydm/scenic.git", "dc20be238ce1d38f043354cf5840c8ebb3ba4ea2", [branch: "v0.11"]},
 }
