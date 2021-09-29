@@ -211,6 +211,6 @@ defmodule Launcher.Scene.Home do
   end
 
   defp exit do
-    :application.stop(:play)
+    :application.stop(:fw)
   end
 end

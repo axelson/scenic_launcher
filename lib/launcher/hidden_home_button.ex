@@ -32,18 +32,15 @@ defmodule Launcher.HiddenHomeButton do
   @impl Scenic.Scene
   def init(scene, opts, _scenic_opts) do
     on_switch = Keyword.get(opts, :on_switch)
-    %Scenic.ViewPort{size: {screen_width, _screen_height}} = scene.viewport
-
-    graph =
-      Graph.build()
-      |> Scenic.Primitives.rect({@width, @height}, input: [:cursor_button], fill: :clear, t: {screen_width - @width, 0})
 
     state = %State{on_switch: on_switch}
 
     scene =
       scene
       |> assign(:state, state)
-      |> push_graph(graph)
+      |> push_graph(graph(scene))
+
+    if auto_refresh(), do: schedule_refresh()
 
     {:ok, scene}
   end
@@ -59,4 +56,32 @@ defmodule Launcher.HiddenHomeButton do
   def handle_input(_input, _context, scene) do
     {:noreply, scene}
   end
+
+  @impl GenServer
+  def handle_info(:refresh_tick, scene) do
+    push_graph(scene, graph(scene))
+
+    schedule_refresh()
+    {:noreply, scene}
+  end
+
+  defp graph(scene) do
+    %Scenic.ViewPort{size: {screen_width, _screen_height}} = scene.viewport
+    {ms, _} = :erlang.statistics(:wall_clock)
+
+    Graph.build()
+    |> Scenic.Primitives.rect({@width, @height},
+      input: [:cursor_button],
+      fill: :clear,
+      t: {screen_width - @width, 0}
+    )
+    |> Scenic.Primitives.rect({1, 1},
+      fill: :clear,
+      t: {rem(ms, 100), 0}
+    )
+  end
+
+  defp schedule_refresh, do: Process.send_after(self(), :refresh_tick, 100)
+
+  defp auto_refresh, do: Application.get_env(:launcher, :auto_refresh)
 end
