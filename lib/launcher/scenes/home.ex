@@ -34,17 +34,17 @@ defmodule Launcher.Scene.Home do
       |> Scenic.Components.button("Sleep Screen",
         id: :btn_sleep_screen,
         t: {10, screen_height - 70},
-        button_font_size: @button_font_size
+        styles: [font_size: @button_font_size]
       )
       |> Scenic.Components.button("Reboot",
         id: :btn_reboot,
         t: {255, screen_height - 70},
-        button_font_size: @button_font_size
+        styles: [font_size: @button_font_size]
       )
       |> Scenic.Components.button("Exit",
         id: :btn_exit,
         t: {424, screen_height - 70},
-        button_font_size: @button_font_size
+        styles: [font_size: @button_font_size]
       )
       |> add_buttons_to_graph()
 
@@ -70,7 +70,7 @@ defmodule Launcher.Scene.Home do
       |> Scenic.Components.button(name,
         id: button_id(slug),
         t: {10, 10 + 80 * index},
-        button_font_size: @button_font_size
+        styles: [font_size: @button_font_size]
       )
     end)
   end
