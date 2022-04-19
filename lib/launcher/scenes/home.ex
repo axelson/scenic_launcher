@@ -79,33 +79,13 @@ defmodule Launcher.Scene.Home do
 
   @impl Scenic.Scene
   def handle_input({:key, {_, :press, _}}, _context, scene) do
-    state = scene.assigns.state
-
-    state =
-      case scene.assigns.state do
-        %State{sleep: true} -> unsleep_screen(state)
-        _ -> state
-      end
-
-    scene =
-      scene
-      |> assign(:state, state)
+    scene = maybe_unsleep_screen(scene)
 
     {:noreply, scene}
   end
 
   def handle_input({:cursor_button, {:btn_left, 1, _, _}}, _context, scene) do
-    state = scene.assigns.state
-
-    state =
-      case scene.assigns.state do
-        %State{sleep: true} -> unsleep_screen(state)
-        _ -> state
-      end
-
-    scene =
-      scene
-      |> assign(:state, state)
+    scene = maybe_unsleep_screen(scene)
 
     {:noreply, scene}
   end
@@ -146,12 +126,7 @@ defmodule Launcher.Scene.Home do
   end
 
   def handle_event({:click, :btn_sleep_screen}, _from, scene) do
-    state = scene.assigns.state
-    state = sleep_screen(state)
-
-    scene =
-      scene
-      |> assign(:state, state)
+    scene = sleep_screen(scene)
 
     {:halt, scene}
   end
@@ -173,26 +148,64 @@ defmodule Launcher.Scene.Home do
     end)
   end
 
-  defp sleep_screen(state) do
+  defp sleep_screen(scene) do
+    state = scene.assigns.state
+    %Scenic.ViewPort{size: {screen_width, screen_height}} = scene.viewport
     Logger.info("Sleeping screen")
+    graph = state.graph
     backlight = backlight()
 
     if backlight do
       backlight.brightness(0)
     end
 
-    %{state | sleep: true}
+    # Add a rect that covers the whole screen so we can capture any tap and use
+    # it to unsleep the screen
+    graph =
+      graph
+      |> Scenic.Primitives.rect({screen_width, screen_height},
+        id: :sleep_rect,
+        input: [:cursor_button],
+        # FIXME: This fill seems necessary for capturing the input which is not
+        # expected to me
+        fill: :black
+      )
+
+    state = %{state | sleep: true, graph: graph}
+
+    scene =
+      scene
+      |> assign(:state, state)
+
+    push_graph(scene, scene.assigns.state.graph)
   end
 
-  defp unsleep_screen(state) do
+  defp maybe_unsleep_screen(scene) do
+    case scene.assigns.state do
+      %State{sleep: true} -> unsleep_screen(scene)
+      _ -> scene
+    end
+  end
+
+  defp unsleep_screen(scene) do
     Logger.info("Unsleeping screen")
+    state = scene.assigns.state
     backlight = backlight()
+    graph = state.graph
 
     if backlight do
       backlight.brightness(255)
     end
 
-    %{state | sleep: false}
+    graph = Graph.delete(graph, :sleep_rect)
+
+    state = %{state | sleep: false, graph: graph}
+
+    scene =
+      scene
+      |> assign(:state, state)
+
+    push_graph(scene, scene.assigns.state.graph)
   end
 
   defp schedule_refresh do
