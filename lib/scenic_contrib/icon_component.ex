@@ -114,11 +114,11 @@ defmodule ScenicContrib.IconComponent do
   end
 
   @impl Scenic.Scene
-  def handle_update(_params, opts, scene) do
+  def handle_update(params, _opts, scene) do
     scene =
       ScenicContrib.Utils.GraphState.update_state_and_graph(scene, fn state, _graph ->
         state =
-          Enum.reduce(opts, state, fn
+          Enum.reduce(params, state, fn
             {:icon, icon}, %State{} = state -> %State{state | icon: icon}
             _, %State{} = state -> state
           end)
