@@ -22,7 +22,8 @@ defmodule Launcher.MixProject do
   defp deps do
     [
       dep(:scenic, :github),
-      {:scenic_widget_contrib, path: "~/dev/forks/scenic-widget-contrib"}
+      {:scenic_widget_contrib, github: "axelson/scenic-widget-contrib", branch: "jax"},
+      # {:scenic_widget_contrib, path: "~/dev/forks/scenic-widget-contrib"}
     ]
   end
 
