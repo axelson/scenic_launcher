@@ -21,7 +21,8 @@ defmodule Launcher.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      dep(:scenic, :github)
+      dep(:scenic, :github),
+      {:scenic_widget_contrib, path: "~/dev/forks/scenic-widget-contrib"}
     ]
   end
 

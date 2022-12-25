@@ -5,17 +5,22 @@ defmodule ScenicContrib.IconComponent do
   """
 
   use Scenic.Component, has_children: true
+  use ScenicWidgets.GraphTools.Upsertable
+
+  require Logger
   require ScenicContrib.Utils
 
   alias Scenic.Graph
 
   defmodule State do
     defstruct [
+      :graph,
       :icon,
       :on_press_icon,
       :on_click,
       :width,
       :height,
+      :parent_pid,
       depressed: false,
       pressed_time: nil
     ]
@@ -34,6 +39,7 @@ defmodule ScenicContrib.IconComponent do
     on_press_icon = Keyword.get(opts, :on_press_icon)
     width = Keyword.get(opts, :width, @default_width)
     height = Keyword.get(opts, :height, @default_height)
+    parent_pid = Keyword.get(opts, :parent_pid)
 
     on_click = Keyword.get(opts, :on_click)
 
@@ -42,10 +48,12 @@ defmodule ScenicContrib.IconComponent do
       on_press_icon: on_press_icon,
       on_click: on_click,
       width: width,
-      height: height
+      height: height,
+      parent_pid: parent_pid
     }
 
     graph = render(state, false)
+    state = %State{state | graph: graph}
 
     scene =
       scene
@@ -64,7 +72,8 @@ defmodule ScenicContrib.IconComponent do
       ) do
     state = scene.assigns.state
     %State{on_click: on_click} = state
-    Task.start(on_click)
+    Logger.info("handling on_click in #{inspect(self())}")
+    Task.start(fn -> on_click.(state.parent_pid) end)
 
     graph = render(state, true)
     state = %State{state | pressed_time: System.monotonic_time(:millisecond)}
@@ -104,6 +113,23 @@ defmodule ScenicContrib.IconComponent do
     {:noreply, scene}
   end
 
+  @impl Scenic.Scene
+  def handle_update(_params, opts, scene) do
+    scene =
+      ScenicContrib.Utils.GraphState.update_state_and_graph(scene, fn state, _graph ->
+        state =
+          Enum.reduce(opts, state, fn
+            {:icon, icon}, %State{} = state -> %State{state | icon: icon}
+            _, %State{} = state -> state
+          end)
+
+        graph = render(state, false)
+        {state, graph}
+      end)
+
+    {:noreply, scene}
+  end
+
   @impl GenServer
   def handle_info(:release_button, scene) do
     state = scene.assigns.state
@@ -130,6 +156,7 @@ defmodule ScenicContrib.IconComponent do
         {:image, icon}
       end
 
+    # TODO: Don't rebuild a completely new graph here
     Graph.build()
     |> Scenic.Primitives.rect(
       {width, height},
