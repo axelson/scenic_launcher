@@ -14,6 +14,7 @@ defmodule Launcher.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      mod: {Launcher.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -22,7 +23,9 @@ defmodule Launcher.MixProject do
   defp deps do
     [
       dep(:scenic, :hex),
-      {:scenic_widget_contrib, github: "axelson/scenic-widget-contrib", branch: "jax"},
+      {:scenic_live_reload, path: "~/dev/scenic_live_reload", only: :dev},
+      {:scenic_driver_local, "~> 0.11", only: :dev},
+      {:scenic_widget_contrib, github: "axelson/scenic-widget-contrib", branch: "jax"}
       # {:scenic_widget_contrib, path: "~/dev/forks/scenic-widget-contrib"}
     ]
   end
