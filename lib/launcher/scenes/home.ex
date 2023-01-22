@@ -36,14 +36,19 @@ defmodule Launcher.Scene.Home do
         t: {10, screen_height - 70},
         styles: [font_size: @button_font_size]
       )
+      |> Scenic.Components.button("Sleep All",
+        id: :btn_sleep_all,
+        t: {255, screen_height - 70},
+        styles: [font_size: @button_font_size]
+      )
       |> Scenic.Components.button("Reboot",
         id: :btn_reboot,
-        t: {255, screen_height - 70},
+        t: {444, screen_height - 70},
         styles: [font_size: @button_font_size]
       )
       |> Scenic.Components.button("Exit",
         id: :btn_exit,
-        t: {424, screen_height - 70},
+        t: {680, screen_height - 70},
         styles: [font_size: @button_font_size]
       )
       |> add_buttons_to_graph()
@@ -131,6 +136,11 @@ defmodule Launcher.Scene.Home do
     {:halt, scene}
   end
 
+  def handle_event({:click, :btn_sleep_all}, _from, scene) do
+    scene = sleep_all(scene)
+    {:halt, scene}
+  end
+
   def handle_event({:click, :btn_exit}, _from, scene) do
     exit()
     {:halt, scene}
@@ -180,6 +190,20 @@ defmodule Launcher.Scene.Home do
     push_graph(scene, scene.assigns.state.graph)
   end
 
+  defp sleep_all(scene) do
+    sleep_all_module = sleep_all_module()
+
+    if sleep_all_module do
+      Logger.info("Sleep all with #{inspect(sleep_all_module)}!")
+      sleep_all_module.sleep_all()
+    end
+
+    # Semi-synchronize the sleeping
+    Process.sleep(1_000)
+
+    sleep_screen(scene)
+  end
+
   defp maybe_unsleep_screen(scene) do
     case scene.assigns.state do
       %State{sleep: true} -> unsleep_screen(scene)
@@ -215,6 +239,7 @@ defmodule Launcher.Scene.Home do
   end
 
   defp backlight(), do: Launcher.LauncherConfig.backlight_module()
+  defp sleep_all_module(), do: Launcher.LauncherConfig.sleep_all_module()
 
   defp reboot do
     case Launcher.LauncherConfig.reboot_mfa() do

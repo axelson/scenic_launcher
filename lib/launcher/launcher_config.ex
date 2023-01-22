@@ -3,6 +3,10 @@ defmodule Launcher.LauncherConfig do
     Application.get_env(:launcher, :backlight_module)
   end
 
+  def sleep_all_module do
+    Application.get_env(:launcher, :sleep_all_module)
+  end
+
   def refresh_enabled? do
     Application.get_env(:launcher, :refresh_enabled, false)
   end
