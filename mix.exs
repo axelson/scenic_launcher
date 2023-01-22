@@ -24,6 +24,7 @@ defmodule Launcher.MixProject do
     [
       dep(:scenic, :hex),
       {:scenic_live_reload, path: "~/dev/scenic_live_reload", only: :dev},
+      {:exsync, path: "~/dev/forks/exsync", override: true, only: [:dev]},
       {:scenic_driver_local, "~> 0.11", only: :dev},
       {:scenic_widget_contrib, github: "axelson/scenic-widget-contrib", branch: "jax"}
       # {:scenic_widget_contrib, path: "~/dev/forks/scenic-widget-contrib"}

@@ -15,3 +15,13 @@ config :launcher, :viewport,
       on_close: :stop_system
     ]
   ]
+
+case Mix.env() do
+  :dev ->
+    config :exsync,
+      reload_timeout: 150,
+      reload_callback: {ScenicLiveReload, :reload_current_scenes, []}
+
+  _ ->
+    nil
+end
