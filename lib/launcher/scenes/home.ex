@@ -199,7 +199,7 @@ defmodule Launcher.Scene.Home do
     end
 
     # Semi-synchronize the sleeping
-    Process.sleep(500)
+    Process.sleep(300)
 
     sleep_screen(scene)
   end
