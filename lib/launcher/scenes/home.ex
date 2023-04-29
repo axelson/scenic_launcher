@@ -95,8 +95,8 @@ defmodule Launcher.Scene.Home do
     {:noreply, scene}
   end
 
-  def handle_input(_input, _context, scene) do
-    # Logger.info("ignoring input: #{inspect input}. Scene: #{inspect scene}")
+  def handle_input(input, _context, scene) do
+    Logger.info("ignoring input: #{inspect input}")
     {:noreply, scene}
   end
 
