@@ -132,7 +132,7 @@ defmodule ScenicContrib.IconComponent do
 
   @impl GenServer
   def handle_info(:release_button, scene) do
-    state = scene.assigns.state
+    %State{} = state = scene.assigns.state
     graph = render(state, false)
     state = %State{state | pressed_time: nil}
 
